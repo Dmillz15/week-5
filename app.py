@@ -1,10 +1,9 @@
 import streamlit as st
+import plotly.graph_objects as go
 
 from apputil import *
-
 # Load Titanic dataset
 df = pd.read_csv('https://raw.githubusercontent.com/leontoddjohnson/datasets/main/data/titanic.csv')
-
 st.write(
 '''
 # Titanic Visualization 1
