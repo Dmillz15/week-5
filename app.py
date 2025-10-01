@@ -2,12 +2,9 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from apputil import *
-# Load Titanic dataset
 df = pd.read_csv('https://raw.githubusercontent.com/leontoddjohnson/datasets/main/data/titanic.csv')
-import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 
 # Load Titanic dataset
 df = pd.read_csv('https://raw.githubusercontent.com/leontoddjohnson/datasets/main/data/titanic.csv')
@@ -17,21 +14,18 @@ def survival_demographics():
     Analyze survival patterns by passenger class, sex, and age group.
     Returns a DataFrame with passenger counts, survivor counts, and survival rates.
     """
-    # Create age categories using pd.cut()
+    # Age categories
     bins = [0, 12, 19, 59, 100]
     labels = ['Child', 'Teen', 'Adult', 'Senior']
     df['age_group'] = pd.cut(df['Age'], bins=bins, labels=labels, right=True)
     
-    # Group by class, sex, and age group
     grouped = df.groupby(['Pclass', 'Sex', 'age_group']).agg(
         n_passengers=('PassengerId', 'count'),
         n_survivors=('Survived', 'sum')
     ).reset_index()
     
-    # Calculate survival rate
     grouped['survival_rate'] = (grouped['n_survivors'] / grouped['n_passengers']).round(3)
     
-    # Order results for easy interpretation
     grouped = grouped.sort_values(['Pclass', 'Sex', 'age_group'])
     
     return grouped
@@ -43,7 +37,6 @@ def visualize_demographic():
     """
     data = survival_demographics()
     
-    # Create a grouped bar chart with distinct colors for genders
     fig = px.bar(
         data,
         x='Pclass',
@@ -70,7 +63,6 @@ def visualize_demographic():
         }
     )
     
-    # Customize the layout
     fig.update_layout(
         yaxis_tickformat=',.0%',
         yaxis_range=[0, 1.1],
@@ -85,10 +77,8 @@ def visualize_demographic():
         )
     )
     
-    # Update facet labels to be more readable
     fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
     
-    # Add value labels on bars
     for i, row in data.iterrows():
         class_offset = -0.2 if row['Sex'] == 'female' else 0.2
         facet_col = ['Child', 'Teen', 'Adult', 'Senior'].index(row['age_group'])
@@ -156,7 +146,6 @@ st.write(
 '''
 )
 
-# Generate and display the figure
 fig1 = visualize_demographic()
 st.plotly_chart(fig1, use_container_width=True)
 
